@@ -91,8 +91,8 @@ class OpenSearchEngine: NSObject, NSCoding {
     private func isSearchURLForEngine(url: NSURL?) -> Bool {
         guard let urlHost = url?.host,
             let queryEndIndex = searchTemplate.rangeOfString("?")?.startIndex,
-            let templateURL = NSURL(string: searchTemplate.substringToIndex(queryEndIndex)),
-            let templateURLHost = templateURL.host else { return false }
+            let templateURL = NSURL(string: searchTemplate.substringToIndex(queryEndIndex)) else { return false }
+        let templateURLHost = templateURL.extractDomainName()
         return urlHost.localizedCaseInsensitiveContainsString(templateURLHost)
     }
 
