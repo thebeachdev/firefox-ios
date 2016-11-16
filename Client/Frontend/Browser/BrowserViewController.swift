@@ -136,14 +136,15 @@ class BrowserViewController: UIViewController {
             self.displayedPopoverController = nil
         }
 
-        guard let displayedPopoverController = self.displayedPopoverController else {
-            return
-        }
-
-        coordinator.animateAlongsideTransition(nil) { context in
-            self.updateDisplayedPopoverProperties?()
-            self.presentViewController(displayedPopoverController, animated: true, completion: nil)
-        }
+        coordinator.animateAlongsideTransition({context in
+            self.scrollController.updateMinimumZoom()
+            if let popover = self.displayedPopoverController {
+                self.updateDisplayedPopoverProperties?()
+                self.presentViewController(popover, animated: true, completion: nil)
+            }
+            }, completion: { _ in
+                self.scrollController.setMinimumZoom()
+        })
     }
 
     override func didReceiveMemoryWarning() {
@@ -271,10 +272,7 @@ class BrowserViewController: UIViewController {
         displayedPopoverController?.dismissViewControllerAnimated(true, completion: nil)
         coordinator.animateAlongsideTransition({ context in
             self.scrollController.showToolbars(animated: false)
-            self.scrollController.updateMinimumZoom()
-            }, completion: { _ in
-                self.scrollController.setMinimumZoom()
-        })
+            }, completion: nil)
     }
 
     func SELappDidEnterBackgroundNotification() {
